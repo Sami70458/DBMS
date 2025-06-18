@@ -118,6 +118,8 @@ SELECT CASE
          THEN 'Yes'
          ELSE 'No'
        END AS did_meet_accident;
+or
+SELECT NAME FROM PERSON P, PARTICIPATED PA, ACCIDENT A WHERE P.DRIVER_ID = PA.DRIVER_ID AND PA.REPORTNO = A.REPORTNO AND TO_CHAR(A.RDATE, 'YYYY') = '2023';
 
 7.Display name of a person & the car he/she owns
 
