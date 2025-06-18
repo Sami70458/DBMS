@@ -1,0 +1,137 @@
+Problem 7
+
+Write PL/SQL code for the following:
+
+1.Find the factorial of a given number.
+
+DECLARE
+  n NUMBER := 5;
+  fact NUMBER := 1;
+BEGIN
+  FOR i IN 1..n LOOP
+    fact := fact * i;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Factorial is ' || fact);
+END;
+
+
+2.Inverting number 5639 to 9365
+
+DECLARE
+  num NUMBER := 5639;
+  rev NUMBER := 0;
+BEGIN
+  WHILE num > 0 LOOP
+    rev := rev * 10 + MOD(num, 10);
+    num := FLOOR(num / 10);
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Reversed number: ' || rev);
+END;
+
+3. Sum of N numbers
+
+DECLARE
+  n NUMBER := 10;
+  sum NUMBER := 0;
+BEGIN
+  FOR i IN 1..n LOOP
+    sum := sum + i;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Sum is: ' || sum);
+END;
+
+
+4.Fibonacci Series
+
+DECLARE
+  n NUMBER := 10;
+  a NUMBER := 0;
+  b NUMBER := 1;
+  c NUMBER;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE(a);
+  DBMS_OUTPUT.PUT_LINE(b);
+  FOR i IN 3..n LOOP
+    c := a + b;
+    DBMS_OUTPUT.PUT_LINE(c);
+    a := b;
+    b := c;
+  END LOOP;
+END;
+
+5.Leap Year Check
+
+DECLARE
+  year NUMBER := 2024;
+BEGIN
+  IF MOD(year, 400) = 0 OR (MOD(year, 4) = 0 AND MOD(year, 100) != 0) THEN
+    DBMS_OUTPUT.PUT_LINE('Leap Year');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Not a Leap Year');
+  END IF;
+END;
+
+
+6. Find maximum of 3 numbers
+
+DECLARE
+  a NUMBER := 5;
+  b NUMBER := 12;
+  c NUMBER := 9;
+  max_val NUMBER;
+BEGIN
+  max_val := a;
+  IF b > max_val THEN
+    max_val := b;
+  END IF;
+  IF c > max_val THEN
+    max_val := c;
+  END IF;
+  DBMS_OUTPUT.PUT_LINE('Maximum is ' || max_val);
+END;
+
+
+7.Store radius and area of circle in table
+
+BEGIN
+  FOR r IN 6..10 LOOP
+    INSERT INTO Areas VALUES (r, 3.14 * r * r);
+  END LOOP;
+  COMMIT;
+END;
+
+
+8.Add ₹1000 if balance ≥ ₹6000
+
+DECLARE
+  c_no NUMBER := 101;
+  balance NUMBER;
+BEGIN
+  SELECT bal INTO balance FROM client_master WHERE client_no = c_no;
+
+  IF balance >= 6000 THEN
+    UPDATE client_master SET bal = bal + 1000 WHERE client_no = c_no;
+    DBMS_OUTPUT.PUT_LINE('Amount added successfully.');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Minimum balance not maintained.');
+  END IF;
+END;
+
+
+9.Display salary of ALLEN if > 5000
+
+DECLARE
+  sal NUMBER;
+BEGIN
+  SELECT salary INTO sal FROM emp WHERE ename = 'ALLEN';
+
+  IF sal > 5000 THEN
+    DBMS_OUTPUT.PUT_LINE('Salary of ALLEN is: ' || sal);
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Salary is not greater than 5000.');
+  END IF;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Employee ALLEN not found.');
+END;
+

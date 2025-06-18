@@ -1,0 +1,147 @@
+Problem 5 - Student, Course,Enroll,Book_adaptation and Text
+
+1.Create
+
+CREATE TABLE Student (
+    regno VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(50),
+    major VARCHAR(50),
+    bdate DATE
+);
+
+CREATE TABLE Course (
+    courseno INT PRIMARY KEY,
+    cname VARCHAR(50),
+    dept VARCHAR(50)
+);
+
+CREATE TABLE Enroll (
+    regno VARCHAR(10),
+    courseno INT,
+    sem INT,
+    marks INT,
+    PRIMARY KEY (regno, courseno, sem),
+    FOREIGN KEY (regno) REFERENCES Student(regno),
+    FOREIGN KEY (courseno) REFERENCES Course(courseno)
+);
+
+CREATE TABLE Text (
+    book_isbn INT PRIMARY KEY,
+    book_title VARCHAR(100),
+    publisher VARCHAR(50),
+    author VARCHAR(50)
+);
+
+CREATE TABLE Book_adaption (
+    courseno INT,
+    sem INT,
+    book_isbn INT,
+    PRIMARY KEY (courseno, sem, book_isbn),
+    FOREIGN KEY (courseno) REFERENCES Course(courseno),
+    FOREIGN KEY (book_isbn) REFERENCES Text(book_isbn)
+);
+
+
+2.INSERT
+
+-- Students
+INSERT INTO Student VALUES ('R01', 'Amit Roy', 'CS', '2002-03-15');
+INSERT INTO Student VALUES ('R02', 'Neha Sen', 'IT', '2001-07-20');
+INSERT INTO Student VALUES ('R03', 'Manish Paul', 'CS', '2000-12-25');
+INSERT INTO Student VALUES ('R04', 'Ananya Mehta', 'ECE', '2001-05-10');
+INSERT INTO Student VALUES ('R05', 'Kiran Rao', 'IT', '2002-08-30');
+
+-- Courses
+INSERT INTO Course VALUES (101, 'DBMS', 'CS');
+INSERT INTO Course VALUES (102, 'OS', 'CS');
+INSERT INTO Course VALUES (103, 'DSA', 'IT');
+INSERT INTO Course VALUES (104, 'Networks', 'ECE');
+INSERT INTO Course VALUES (105, 'SE', 'IT');
+
+-- Enrollments
+INSERT INTO Enroll VALUES ('R01', 101, 3, 85);
+INSERT INTO Enroll VALUES ('R02', 102, 3, 88);
+INSERT INTO Enroll VALUES ('R03', 103, 3, 90);
+INSERT INTO Enroll VALUES ('R04', 104, 4, 78);
+INSERT INTO Enroll VALUES ('R05', 105, 5, 95);
+
+-- Textbooks
+INSERT INTO Text VALUES (9001, 'Database Systems', 'Pearson', 'Elmasri');
+INSERT INTO Text VALUES (9002, 'Operating Systems', 'McGraw Hill', 'Silberschatz');
+INSERT INTO Text VALUES (9003, 'Data Structures', 'TMH', 'Lipschutz');
+INSERT INTO Text VALUES (9004, 'Computer Networks', 'Pearson', 'Tanenbaum');
+INSERT INTO Text VALUES (9005, 'Software Engineering', 'Wiley', 'Pressman');
+
+-- Book Adaptation
+INSERT INTO Book_adaption VALUES (101, 3, 9001);
+INSERT INTO Book_adaption VALUES (102, 3, 9002);
+INSERT INTO Book_adaption VALUES (103, 3, 9003);
+INSERT INTO Book_adaption VALUES (104, 4, 9004);
+INSERT INTO Book_adaption VALUES (105, 5, 9005);
+
+
+-- a) Demonstrate how you add a new textbook to the database and make this book adopted by some department.
+
+
+Step1 - Add the new textbook to the Text table
+
+INSERT INTO Text (book_isbn, book_title, publisher, author)
+VALUES (9006, 'Artificial Intelligence', 'Springer', 'Stuart Russell');
+
+Step2 - Make this book adopted by a department for a course
+
+INSERT INTO Book_adaption (courseno, sem, book_isbn)
+VALUES (101, 6, 9006);
+
+b.Produce a list of textbooks in the alphabetic order for course offered by the CS department that use more than two books.
+
+SELECT DISTINCT T.book_title
+FROM Text T
+JOIN Book_adaption B ON T.book_isbn = B.book_isbn
+JOIN Course C ON C.courseno = B.courseno
+WHERE C.dept = 'CS'
+AND B.courseno IN (
+    SELECT courseno
+    FROM Book_adaption
+    JOIN Course ON Course.courseno = Book_adaption.courseno
+    WHERE dept = 'CS'
+    GROUP BY courseno
+    HAVING COUNT(DISTINCT book_isbn) > 2
+)
+ORDER BY T.book_title;
+
+c.List any department that has all its adopted books published by a specific publisher.
+
+SELECT dept
+FROM Course C
+JOIN Book_adaption B ON C.courseno = B.courseno
+JOIN Text T ON B.book_isbn = T.book_isbn
+GROUP BY dept
+HAVING COUNT(DISTINCT B.book_isbn) = 
+       COUNT(DISTINCT CASE WHEN T.publisher = 'McGraw-Hill' THEN B.book_isbn END);
+
+
+d.We would like to see the number of students for each course.
+
+SELECT E.courseno, C.cname, COUNT(DISTINCT E.regno) AS student_count
+FROM Enroll E
+JOIN Course C ON E.courseno = C.courseno
+GROUP BY E.courseno, C.cname;
+
+
+e.We would like to see name and USN of the students of a specific course.
+
+(using course number)
+
+SELECT S.name, S.regno
+FROM Student S
+JOIN Enroll E ON S.regno = E.regno
+WHERE E.courseno = 101;  -- Replace 101 with your desired course number
+
+(using course name)
+SELECT S.name, S.regno
+FROM Student S
+JOIN Enroll E ON S.regno = E.regno
+JOIN Course C ON E.courseno = C.courseno
+WHERE C.cname = 'Database Systems';  -- Replace with your course name
+

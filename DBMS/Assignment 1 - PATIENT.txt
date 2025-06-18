@@ -1,0 +1,83 @@
+Assignment 1 - PATIENT
+
+1.Create all the relations and insert atleast five records in each table.
+
+CREATE TABLE PATIENT (
+    P_ID VARCHAR2(10) PRIMARY KEY,
+    P_NAME VARCHAR(20),
+    P_DOB DATE,
+    P_AILMENT VARCHAR(20),
+    P_BILL NUMBER(10),
+    P_CONTACT VARCHAR(15),
+    P_ADDR VARCHAR2(100)
+);
+
+> DESC PATIENT;
+
+insertion :- 
+
+INSERT INTO PATIENT VALUES ('P001', 'Anil Roy', TO_DATE('1955-04-23', 'YYYY-MM-DD'), 'Heart', 25000, '9876543210', 'Kolkata');
+INSERT INTO PATIENT VALUES ('P002', 'Sneha Das', TO_DATE('1985-09-15', 'YYYY-MM-DD'), 'Diabetes', 15000, '9834567890', 'Howrah');
+INSERT INTO PATIENT VALUES ('P003', 'Ravi Sen', TO_DATE('1960-01-10', 'YYYY-MM-DD'), 'Heart', 22000, '9123456789', 'Kolkata');
+INSERT INTO PATIENT VALUES ('P004', 'Priya Ghosh', TO_DATE('1975-07-20', 'YYYY-MM-DD'), 'Asthma', 18000, '7986541230', 'Delhi');
+INSERT INTO PATIENT VALUES ('P005', 'Amit Jain', TO_DATE('1990-12-30', 'YYYY-MM-DD'), 'Fever', 21000, '9112345678', 'Mumbai');
+
+OR
+
+INSERT INTO PATIENT VALUES ('P001', 'Anil Roy','03-Mar-04', 'Heart', 25000, '9876543210', 'Kolkata');
+
+
+ii. Find all the existing information in the table
+
+SELECT * FROM PATIENT;
+
+iii.Find all the patients who can avail senior citizen discount.
+
+SELECT * 
+FROM PATIENT
+WHERE MONTHS_BETWEEN(SYSDATE, P_DOB) / 12 >= 60;
+
+OR
+
+SELECT * FROM PATIENT WHERE (SYSDATE-P_DOB) > 365*60;
+
+iv. Find all the patients who have heart ailment and are from Kolkata.
+
+SELECT * 
+FROM PATIENT
+WHERE LOWER(P_AILMENT) = 'heart' AND LOWER(P_ADDR) = 'kolkata';
+
+OR
+
+SELECT * 
+FROM PATIENT
+WHERE P_AILMENT = 'heart' AND P_ADDR = 'kolkata';
+
+
+v.Find id, name, bill of all the patients who have a bill of more than Rs. 20000/- and are from outside Kolkata.
+
+SELECT P_ID, P_NAME, P_BILL
+FROM PATIENT
+WHERE P_BILL > 20000 AND LOWER(P_ADDR) <> 'kolkata';
+
+vi.Find all the patients who were born between 1980 and 1990.
+
+SELECT * 
+FROM PATIENT
+WHERE P_DOB BETWEEN TO_DATE('1980-01-01', 'YYYY-MM-DD') AND TO_DATE('1990-12-31', 'YYYY-MM-DD');
+
+OR
+
+SELECT * 
+FROM PATIENT
+WHERE P_DOB BETWEEN DATE '1980-01-01' AND DATE '1990-12-31';
+
+
+vii.Find all the patients who have a contact person in Kolkata.
+
+SELECT * 
+FROM PATIENT
+WHERE LOWER(P_ADDR) = 'kolkata';
+
+
+

@@ -1,0 +1,113 @@
+Assignment 3 - Person,Car,Accident,Owns,Participated
+
+CREATE TABLE
+
+-- Table: Person
+CREATE TABLE Person (
+    driver_id VARCHAR2(10) PRIMARY KEY,
+    name VARCHAR2(50),
+    address VARCHAR2(100)
+);
+
+-- Table: Car
+CREATE TABLE Car (
+    regno VARCHAR2(15) PRIMARY KEY,
+    model VARCHAR2(30),
+    year NUMBER(4)
+);
+
+-- Table: Accident
+CREATE TABLE Accident (
+    reportno NUMBER PRIMARY KEY,
+    date DATE,
+    location VARCHAR2(100)
+);
+
+-- Table: Owns
+CREATE TABLE Owns (
+    driver_id VARCHAR2(10),
+    regno VARCHAR2(15),
+    PRIMARY KEY (driver_id, regno),
+    FOREIGN KEY (driver_id) REFERENCES Person(driver_id),
+    FOREIGN KEY (regno) REFERENCES Car(regno)
+);
+
+-- Table: Participated
+CREATE TABLE Participated (
+    driver_id VARCHAR2(10),
+    regno VARCHAR2(15),
+    reportno NUMBER,
+    damageamount NUMBER(10),
+    PRIMARY KEY (driver_id, regno, reportno),
+    FOREIGN KEY (driver_id) REFERENCES Person(driver_id),
+    FOREIGN KEY (regno) REFERENCES Car(regno),
+    FOREIGN KEY (reportno) REFERENCES Accident(reportno)
+);
+
+
+2.INSERT
+
+-- Insert into Person
+INSERT INTO Person VALUES ('D101', 'Amit Roy', 'Kolkata');
+INSERT INTO Person VALUES ('D102', 'Sunita Das', 'Delhi');
+INSERT INTO Person VALUES ('D103', 'Rajesh Mehra', 'Mumbai');
+INSERT INTO Person VALUES ('D104', 'Priya Sharma', 'Pune');
+
+-- Insert into Car
+INSERT INTO Car VALUES ('WB01A1001', 'Santro', 2000);
+INSERT INTO Car VALUES ('DL04B2002', 'Swift', 2002);
+INSERT INTO Car VALUES ('MH12C3003', 'Alto', 2003);
+INSERT INTO Car VALUES ('PY05D4004', 'i10', 2005);
+
+-- Insert into Accident
+INSERT INTO Accident VALUES (101, TO_DATE('2002-03-15', 'YYYY-MM-DD'), 'Delhi');
+INSERT INTO Accident VALUES (102, TO_DATE('2003-06-20', 'YYYY-MM-DD'), 'Mumbai');
+INSERT INTO Accident VALUES (103, TO_DATE('2002-08-10', 'YYYY-MM-DD'), 'Kolkata');
+
+-- Insert into Owns
+INSERT INTO Owns VALUES ('D101', 'WB01A1001');
+INSERT INTO Owns VALUES ('D102', 'DL04B2002');
+INSERT INTO Owns VALUES ('D103', 'MH12C3003');
+INSERT INTO Owns VALUES ('D104', 'PY05D4004');
+
+-- Insert into Participated
+INSERT INTO Participated VALUES ('D101', 'WB01A1001', 101, 12000);
+INSERT INTO Participated VALUES ('D102', 'DL04B2002', 102, 8000);
+INSERT INTO Participated VALUES ('D103', 'MH12C3003', 103, 15000);
+
+
+3.Update the damage amount for the car with a specific register number in the accident with report number between 1 & 200
+
+UPDATE participated
+SET damageamount = 50000
+WHERE regno = 'MH12AB1234'
+  AND reportno BETWEEN 1 AND 200;
+
+4.Find the total number of people who owned the cars that were involved in accidents in 2002
+
+SELECT COUNT(DISTINCT o.driver_id) AS total_people
+FROM owns o
+JOIN participated p ON o.regno = p.regno
+JOIN accident a ON p.reportno = a.reportno
+WHERE EXTRACT(YEAR FROM a.date) = 2002;
+
+5.Find the number of accidents in which cars belonging to a specific model were involved
+SELECT COUNT(DISTINCT p.reportno) AS total_accidents
+FROM participated p
+JOIN car c ON p.regno = c.regno
+WHERE c.model = 'Santro';
+
+6.Check if a person with a specific driver ID has met with an accident in 2003
+
+SELECT COUNT(*) AS total_accidents
+FROM participated p
+JOIN accident a ON p.reportno = a.reportno
+WHERE p.driver_id = 'D102'
+  AND EXTRACT(YEAR FROM a.date) = 2003;
+
+7.Display name of a person & the car he/she owns
+
+SELECT p.name, c.model, c.regno
+FROM person p
+JOIN owns o ON p.driver_id = o.driver_id
+JOIN car c ON o.regno = c.regno;
