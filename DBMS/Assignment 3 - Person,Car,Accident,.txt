@@ -105,6 +105,20 @@ JOIN accident a ON p.reportno = a.reportno
 WHERE p.driver_id = 'D102'
   AND EXTRACT(YEAR FROM a.date) = 2003;
 
+Or
+
+SELECT CASE
+         WHEN EXISTS (
+           SELECT 1
+           FROM participated p
+           JOIN accident a ON p.reportno = a.reportno
+           WHERE p.driver_id = 'D102'
+             AND EXTRACT(YEAR FROM a.date) = 2003
+         )
+         THEN 'Yes'
+         ELSE 'No'
+       END AS did_meet_accident;
+
 7.Display name of a person & the car he/she owns
 
 SELECT p.name, c.model, c.regno
